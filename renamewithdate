@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use File::Copy;
+use Image::ExifTool;
+
+my $exifTool = new Image::ExifTool;
+
+my $file;
+
+while ($file = shift) {
+    my $imageInfo = $exifTool->ImageInfo($file);
+    my $date_photo = $$imageInfo{'CreateDate'};
+    
+    if ($date_photo && $date_photo =~ m/(\d+):(\d+):(\d+)\s+(\d+):(\d+):(\d+)/) {
+	my $year  = $1;
+	my $month = $2;
+	my $day   = $3;
+
+	print "Exif Date : $year-$month-$day\n";
+	
+	my $oldFile = $file;
+	if ($file =~ m/(IMG)(_\d+)(-\w+)?(\.JPG)/) {
+	    $file =~ s/(IMG)(_\d+)((-\w+)?(\.JPG))/$1_R$2--$year-$month-$day$3/;
+	    print "Old File : #$oldFile#, new file : #$file#\n";
+	    File::Copy::move($oldFile, $file);
+	} elsif ($file =~ m/(P)(\d+)(-\w+)?(\.JPG)/) {
+	    $file =~ s/(P)(\d+)((-\w+)?(\.JPG))/$1$2--$year-$month-$day$3/;
+	    print "Old File : #$oldFile#, new file : #$file#\n";
+	    File::Copy::move($oldFile, $file);
+	} else {
+	    print "Old File : #$oldFile# -> not recognized\n";
+	}
+    } else {
+	print "Old File : #$file : not a jpg file with exif date ($date_photo)\n";
+    }
+}
