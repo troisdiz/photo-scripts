@@ -19,17 +19,19 @@ while ($file = shift) {
 	my $month = $2;
 	my $day   = $3;
 
-	print "Exif Date : $year-$month-$day\n";
+	#print "Exif Date : $year-$month-$day\n";
 	
 	my $oldFile = $file;
 	if ($file =~ m/(IMG)(_\d+)(-\w+)?(\.JPG)/) {
-	    $file =~ s/(IMG)(_\d+)((-\w+)?(\.JPG))/$1_R$2--$year-$month-$day$3/;
-	    print "Old File : #$oldFile#, new file : #$file#\n";
+	    $file =~ s/(IMG)(_\d+)((-\w+)?(\.JPG))/$year-$month-$day--$1$2$3/;
+	    print "$oldFile --> $file\n";
 	    File::Copy::move($oldFile, $file);
+
 	} elsif ($file =~ m/(P)(\d+)(-\w+)?(\.JPG)/) {
-	    $file =~ s/(P)(\d+)((-\w+)?(\.JPG))/$1$2--$year-$month-$day$3/;
-	    print "Old File : #$oldFile#, new file : #$file#\n";
+	    $file =~ s/(P)(\d+)((-\w+)?(\.JPG))/$year-$month-$day--$1$2$3/;
+	    print "$oldFile --> $file\n";
 	    File::Copy::move($oldFile, $file);
+
 	} else {
 	    print "Old File : #$oldFile# -> not recognized\n";
 	}
